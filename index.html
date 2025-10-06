@@ -1,28 +1,591 @@
-<!-- This file is located at E:\Projects\quran-audio\index.html -->
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quran Audio Reciters</title>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pemutar Audio Al-Quran</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body { font-family: sans-serif; line-height: 1.6; padding: 2em; }
-        ul { list-style-type: none; padding: 0; }
-        li { margin: 0.5em 0; }
-        a { text-decoration: none; color: #0366d6; font-size: 1.2em; }
-        a:hover { text-decoration: underline; }
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      /* Custom styles for range inputs */
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 6px;
+        background: #4a5568; /* gray-700 */
+        border-radius: 5px;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+      input[type="range"]:hover {
+        opacity: 1;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        background: #10b981; /* emerald-500 */
+        cursor: pointer;
+        border-radius: 50%;
+        border: 2px solid #1f2937; /* gray-800 */
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        background: #10b981; /* emerald-500 */
+        cursor: pointer;
+        border-radius: 50%;
+        border: 2px solid #1f2937; /* gray-800 */
+      }
+      .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+      }
     </style>
-</head>
-<body>
-    <h1>Quran Audio Collection</h1>
-    <p>Select a reciter to view the audio files.</p>
-    <ul>
-        <li><a href="./alafasy/index.html">Mishary Rashid Alafasy</a></li>
-        <li><a href="#">Ahmed Al-Ajamy (coming soon)</a></li>
-        <li><a href="#">Mahmud Khalil Al-Husary (coming soon)</a></li>
-        <li><a href="#">Mohamed Siddiq El-Minshawi (coming soon)</a></li>
-        <li><a href="#">Muhammad Ayyub (coming soon)</a></li>
-        <li><a href="#">Muhammad Jibreel (coming soon)</a></li>
-    </ul>
-</body>
+  </head>
+  <body
+    class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4"
+  >
+    <div class="w-full max-w-md mx-auto">
+      <!-- Player Card -->
+      <div class="bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
+        <div class="p-6 space-y-6">
+          <!-- Header -->
+          <header class="text-center">
+            <h1 class="text-2xl font-bold text-emerald-400">
+              Pemutar Audio Al-Quran
+            </h1>
+            <p class="text-gray-400 text-sm mt-1">
+              Dengarkan lantunan ayat suci Al-Quran
+            </p>
+          </header>
+
+          <!-- Form Input -->
+          <div class="space-y-4">
+            <div>
+              <label
+                for="qari-select"
+                class="block text-sm font-medium text-gray-300 mb-1"
+                >Pilih Qari</label
+              >
+              <select
+                id="qari-select"
+                class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+              ></select>
+            </div>
+            <div>
+              <label
+                for="ayah-input"
+                class="block text-sm font-medium text-gray-300 mb-1"
+                >Nomor Ayat (1-6236)</label
+              >
+              <input
+                type="number"
+                id="ayah-input"
+                min="1"
+                max="6236"
+                placeholder="Masukkan nomor ayat..."
+                class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+              />
+            </div>
+          </div>
+
+          <!-- Informasi & Status -->
+          <div
+            id="info-display"
+            class="text-center h-10 flex flex-col items-center justify-center"
+          >
+            <p
+              id="current-playing"
+              class="text-gray-300 font-medium truncate"
+            ></p>
+            <p id="status-text" class="text-sm text-yellow-400 h-5"></p>
+          </div>
+
+          <!-- Audio Player -->
+          <div class="space-y-3">
+            <!-- Progress Bar -->
+            <div class="relative">
+              <div
+                id="progress-bar-container"
+                class="bg-gray-700 rounded-full h-1.5 cursor-pointer"
+              >
+                <div
+                  id="progress-bar"
+                  class="bg-emerald-500 h-1.5 rounded-full"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-400">
+              <span id="current-time">00:00</span>
+              <span id="duration">00:00</span>
+            </div>
+
+            <!-- Kontrol Player -->
+            <div class="flex items-center justify-center space-x-6">
+              <button
+                id="prev-btn"
+                class="p-2 rounded-full hover:bg-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M8.445 14.832A1 1 0 0010 14.03V5.968a1 1 0 00-1.555-.832L3.587 9.168a1 1 0 000 1.664l4.858 4.001zM11.555 5.168a1 1 0 011.555.832v8.064a1 1 0 01-1.555.832l-4.858-4.001a1 1 0 010-1.664l4.858-4.001z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                id="play-pause-btn"
+                class="bg-emerald-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-emerald-600 transition transform hover:scale-105 disabled:bg-emerald-800 disabled:cursor-not-allowed"
+              >
+                <!-- Play Icon -->
+                <svg
+                  id="play-icon"
+                  class="w-8 h-8"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"
+                  ></path>
+                </svg>
+                <!-- Pause Icon -->
+                <svg
+                  id="pause-icon"
+                  class="w-8 h-8 hidden"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M5.75 4.5a.75.75 0 00-.75.75v10.5a.75.75 0 001.5 0V5.25A.75.75 0 005.75 4.5zm8.5 0a.75.75 0 00-.75.75v10.5a.75.75 0 001.5 0V5.25a.75.75 0 00-.75-.75z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                id="next-btn"
+                class="p-2 rounded-full hover:bg-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M11.555 5.168A1 1 0 0113 5.968v8.064a1 1 0 01-1.445.894l-4.858-4.001a1 1 0 010-1.664l4.858-4.001zM8.445 14.832A1 1 0 0010 14.03V5.968a1 1 0 00-1.555-.832L3.587 9.168a1 1 0 000 1.664l4.858 4.001z"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Kontrol Volume -->
+            <div class="flex items-center justify-center space-x-2 pt-4">
+              <svg
+                class="w-5 h-5 text-gray-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M7.11 4.15A.75.75 0 018 4.72v10.56a.75.75 0 01-1.266.53L4.176 13H2.75A.75.75 0 012 12.25V7.75A.75.75 0 012.75 7h1.426l2.558-2.558a.75.75 0 01.826-.292zm8.14 2.31a.75.75 0 11-1.06 1.06L15.05 9l-.86.86a.75.75 0 11-1.06-1.06l.86-.86-.86-.86a.75.75 0 111.06-1.06l.86.86.86-.86a.75.75 0 111.06 1.06L16.11 9l.86.86a.75.75 0 010 1.06.75.75 0 01-1.06 0L15.05 11l-.86.86a.75.75 0 11-1.06-1.06l.86-.86.002-.001.002-.001zM11 5.25a.75.75 0 01.75.75v8a.75.75 0 01-1.5 0V6a.75.75 0 01.75-.75z"
+                ></path>
+              </svg>
+              <input
+                id="volume-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value="1"
+                class="w-32"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Direct Audio List -->
+      <div class="mt-8 bg-gray-800 shadow-2xl rounded-2xl p-6">
+        <h2 class="text-xl font-bold text-emerald-400 text-center mb-4">
+          Daftar Audio Langsung
+        </h2>
+        <div id="direct-audio-container" class="space-y-2">
+          <!-- Content generated by JS -->
+        </div>
+      </div>
+
+      <!-- API Docs -->
+      <div class="mt-8 bg-gray-800 shadow-2xl rounded-2xl p-6">
+        <h2 class="text-xl font-bold text-emerald-400 text-center mb-4">
+          Dokumentasi API
+        </h2>
+        <div class="space-y-4 text-sm text-gray-300">
+          <p>
+            Anda dapat mengakses file audio secara langsung menggunakan format
+            URL berikut:
+          </p>
+          <pre
+            class="bg-gray-900 p-3 rounded-lg text-emerald-300 text-xs"
+          ><code>https://nidzammusthafa.github.io/quran-audio/{qari}/{ayat}.mp3</code></pre>
+          <div>
+            <h3 class="font-semibold text-gray-200 mb-1">Parameter:</h3>
+            <ul class="list-disc list-inside space-y-1">
+              <li>
+                <code class="bg-gray-700 p-1 rounded-md text-xs">{qari}</code>:
+                ID dari Qari. Pilihan yang tersedia:
+                <ul
+                  id="qari-list-docs"
+                  class="list-disc list-inside ml-6 mt-1 text-gray-400"
+                >
+                  <!-- Generated by JS -->
+                </ul>
+              </li>
+              <li>
+                <code class="bg-gray-700 p-1 rounded-md text-xs">{ayat}</code>:
+                Nomor ayat, dari <span class="font-mono">1</span> sampai
+                <span class="font-mono">6236</span>.
+              </li>
+            </ul>
+          </div>
+          <p>
+            Contoh:
+            <a
+              href="https://nidzammusthafa.github.io/quran-audio/alafasy/1.mp3"
+              target="_blank"
+              class="text-emerald-400 hover:underline"
+              >https://.../alafasy/1.mp3</a
+            >
+          </p>
+        </div>
+      </div>
+
+      <footer class="text-center text-xs text-gray-500 mt-8 mb-4">
+        Dibuat dengan ❤️. Audio oleh
+        <a
+          href="https://github.com/Nidzammusthafa/quran-audio"
+          target="_blank"
+          class="text-emerald-500 hover:underline"
+          >Nidzam Musthafa</a
+        >.
+      </footer>
+    </div>
+
+    <audio id="audio-player"></audio>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // === KONFIGURASI ===
+        const QARIS = {
+          ahmedajamy: "Ahmed Ajamy",
+          alafasy: "Mishary Alafasy",
+          husarymujawwad: "Husary Mujawwad",
+          minshawi: "Minshawi",
+          muhammadayyoub: "Muhammad Ayyoub",
+          muhammadjibreel: "Muhammad Jibreel",
+        };
+        const AUDIO_BASE_URL = "https://nidzammusthafa.github.io/quran-audio/";
+        const MIN_AYAH = 1;
+        const MAX_AYAH = 6236;
+
+        // === ELEMEN DOM ===
+        const qariSelect = document.getElementById("qari-select");
+        const ayahInput = document.getElementById("ayah-input");
+        const playPauseBtn = document.getElementById("play-pause-btn");
+        const playIcon = document.getElementById("play-icon");
+        const pauseIcon = document.getElementById("pause-icon");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const progressBarContainer = document.getElementById(
+          "progress-bar-container"
+        );
+        const progressBar = document.getElementById("progress-bar");
+        const currentTimeEl = document.getElementById("current-time");
+        const durationEl = document.getElementById("duration");
+        const volumeSlider = document.getElementById("volume-slider");
+        const audioPlayer = document.getElementById("audio-player");
+        const currentPlayingEl = document.getElementById("current-playing");
+        const statusTextEl = document.getElementById("status-text");
+        const directAudioContainer = document.getElementById(
+          "direct-audio-container"
+        );
+        const qariListDocs = document.getElementById("qari-list-docs");
+
+        // === STATE APLIKASI ===
+        let currentQari = "alafasy";
+        let currentAyah = 1;
+        let isPlaying = false;
+
+        // === FUNGSI UTAMA ===
+
+        function init() {
+          populateQariDropdown();
+          loadState();
+          populateDirectAudioList();
+          populateApiDocs();
+          updateInfoDisplay(false);
+          addEventListeners();
+        }
+
+        function loadAndPlayAyah(qariId, ayahNumber) {
+          if (ayahNumber < MIN_AYAH || ayahNumber > MAX_AYAH) {
+            showStatus(
+              `Nomor ayat harus antara ${MIN_AYAH} dan ${MAX_AYAH}`,
+              true
+            );
+            return;
+          }
+
+          currentQari = qariId;
+          currentAyah = ayahNumber;
+
+          const audioUrl = `${AUDIO_BASE_URL}${currentQari}/${currentAyah}.mp3`;
+          audioPlayer.src = audioUrl;
+          audioPlayer.play().catch((e) => {
+            console.error("Gagal memulai pemutaran:", e);
+            showStatus("Gagal memulai pemutaran audio.", true);
+          });
+
+          updateInfoDisplay(true);
+          updateButtonStates();
+          saveState();
+        }
+
+        // === FUNGSI INISIALISASI & POPULASI KONTEN ===
+
+        function populateQariDropdown() {
+          for (const [id, name] of Object.entries(QARIS)) {
+            const option = document.createElement("option");
+            option.value = id;
+            option.textContent = name;
+            qariSelect.appendChild(option);
+          }
+        }
+
+        function loadState() {
+          const savedQari = localStorage.getItem("quranPlayerQari");
+          const savedAyah = localStorage.getItem("quranPlayerAyah");
+
+          if (savedQari && QARIS[savedQari]) {
+            currentQari = savedQari;
+          }
+          if (savedAyah && !isNaN(savedAyah)) {
+            currentAyah = parseInt(savedAyah, 10);
+          }
+
+          qariSelect.value = currentQari;
+          ayahInput.value = currentAyah;
+        }
+
+        function saveState() {
+          localStorage.setItem("quranPlayerQari", currentQari);
+          localStorage.setItem("quranPlayerAyah", currentAyah);
+        }
+
+        function populateDirectAudioList() {
+          for (const [id, name] of Object.entries(QARIS)) {
+            const item = document.createElement("div");
+            item.className = "border border-gray-700 rounded-lg";
+
+            const header = document.createElement("button");
+            header.className =
+              "w-full flex justify-between items-center p-3 text-left font-medium text-gray-200 hover:bg-gray-700 transition";
+            header.innerHTML = `
+                        <span>${name}</span>
+                        <svg class="w-5 h-5 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    `;
+
+            const content = document.createElement("div");
+            content.className = "accordion-content bg-gray-900/50 p-3";
+
+            const list = document.createElement("div");
+            list.className =
+              "grid grid-cols-4 sm:grid-cols-5 gap-2 text-center";
+            for (let i = 1; i <= 20; i++) {
+              const link = document.createElement("a");
+              link.href = `${AUDIO_BASE_URL}${id}/${i}.mp3`;
+              link.target = "_blank";
+              link.textContent = `Ayat ${i}`;
+              link.className = "text-emerald-400 text-sm hover:underline p-1";
+              list.appendChild(link);
+            }
+            content.appendChild(list);
+            item.appendChild(header);
+            item.appendChild(content);
+            directAudioContainer.appendChild(item);
+
+            header.addEventListener("click", () => {
+              const icon = header.querySelector("svg");
+              if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.classList.remove("rotate-180");
+              } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.classList.add("rotate-180");
+              }
+            });
+          }
+        }
+
+        function populateApiDocs() {
+          for (const id of Object.keys(QARIS)) {
+            const li = document.createElement("li");
+            li.innerHTML = `<code class="bg-gray-900 p-1 rounded-md text-xs">${id}</code>`;
+            qariListDocs.appendChild(li);
+          }
+        }
+
+        // === FUNGSI PEMBANTU (HELPERS) ===
+
+        function togglePlayPause() {
+          if (audioPlayer.paused) {
+            if (
+              !audioPlayer.src ||
+              !audioPlayer.src.includes(`/${currentAyah}.mp3`)
+            ) {
+              loadAndPlayAyah(qariSelect.value, parseInt(ayahInput.value, 10));
+            } else {
+              audioPlayer.play();
+            }
+          } else {
+            audioPlayer.pause();
+          }
+        }
+
+        function playNextAyah() {
+          if (currentAyah < MAX_AYAH) {
+            loadAndPlayAyah(currentQari, currentAyah + 1);
+            ayahInput.value = currentAyah;
+          }
+        }
+
+        function playPrevAyah() {
+          if (currentAyah > MIN_AYAH) {
+            loadAndPlayAyah(currentQari, currentAyah - 1);
+            ayahInput.value = currentAyah;
+          }
+        }
+
+        function updatePlayPauseIcon() {
+          isPlaying = !audioPlayer.paused;
+          playIcon.classList.toggle("hidden", isPlaying);
+          pauseIcon.classList.toggle("hidden", !isPlaying);
+        }
+
+        function updateInfoDisplay(isPlayingAction = false) {
+          const qariName = QARIS[currentQari];
+          const text = `${qariName} - Ayat ${currentAyah}`;
+          currentPlayingEl.textContent = isPlayingAction
+            ? `Memainkan: ${text}`
+            : text;
+        }
+
+        function updateProgress() {
+          const { duration, currentTime } = audioPlayer;
+          if (duration) {
+            progressBar.style.width = `${(currentTime / duration) * 100}%`;
+            currentTimeEl.textContent = formatTime(currentTime);
+            durationEl.textContent = formatTime(duration);
+          }
+        }
+
+        function setProgress(e) {
+          const duration = audioPlayer.duration;
+          if (duration) {
+            audioPlayer.currentTime = (e.offsetX / this.clientWidth) * duration;
+          }
+        }
+
+        function formatTime(seconds) {
+          const minutes = Math.floor(seconds / 60);
+          const secs = Math.floor(seconds % 60);
+          return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
+            2,
+            "0"
+          )}`;
+        }
+
+        function showStatus(message, isError = false) {
+          statusTextEl.textContent = message;
+          statusTextEl.classList.toggle("text-red-500", isError);
+          statusTextEl.classList.toggle("text-yellow-400", !isError);
+          setTimeout(() => (statusTextEl.textContent = ""), 3000);
+        }
+
+        function updateButtonStates() {
+          prevBtn.disabled = currentAyah <= MIN_AYAH;
+          nextBtn.disabled = currentAyah >= MAX_AYAH;
+        }
+
+        // === EVENT LISTENERS ===
+
+        function addEventListeners() {
+          playPauseBtn.addEventListener("click", togglePlayPause);
+          prevBtn.addEventListener("click", playPrevAyah);
+          nextBtn.addEventListener("click", playNextAyah);
+
+          const playFromInputs = () => {
+            const newAyah = parseInt(ayahInput.value, 10);
+            const newQari = qariSelect.value;
+            loadAndPlayAyah(newQari, newAyah);
+          };
+
+          ayahInput.addEventListener("change", playFromInputs);
+          qariSelect.addEventListener("change", playFromInputs);
+          ayahInput.addEventListener(
+            "keypress",
+            (e) => e.key === "Enter" && playFromInputs()
+          );
+
+          audioPlayer.addEventListener("play", updatePlayPauseIcon);
+          audioPlayer.addEventListener("pause", updatePlayPauseIcon);
+          audioPlayer.addEventListener("ended", playNextAyah);
+          audioPlayer.addEventListener("timeupdate", updateProgress);
+          audioPlayer.addEventListener("loadedmetadata", updateProgress);
+
+          audioPlayer.addEventListener("waiting", () =>
+            showStatus("Memuat audio...")
+          );
+          audioPlayer.addEventListener("canplay", () => {
+            if (statusTextEl.textContent === "Memuat audio...") {
+              statusTextEl.textContent = "";
+            }
+          });
+          audioPlayer.addEventListener("error", () => {
+            showStatus("Error: Audio tidak ditemukan", true);
+            audioPlayer.pause();
+          });
+
+          progressBarContainer.addEventListener("click", setProgress);
+          volumeSlider.addEventListener(
+            "input",
+            (e) => (audioPlayer.volume = e.target.value)
+          );
+
+          document.addEventListener("keydown", (e) => {
+            if (document.activeElement === ayahInput) return;
+            if (e.code === "Space") {
+              e.preventDefault();
+              togglePlayPause();
+            }
+            if (e.code === "ArrowRight") {
+              e.preventDefault();
+              playNextAyah();
+            }
+            if (e.code === "ArrowLeft") {
+              e.preventDefault();
+              playPrevAyah();
+            }
+          });
+        }
+
+        init();
+      });
+    </script>
+  </body>
 </html>
