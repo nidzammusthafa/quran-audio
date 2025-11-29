@@ -9,8 +9,8 @@ Audio dibagi menjadi 3 repository untuk menghindari batas ukuran GitHub:
 | Repository | GitHub Pages URL | Qari |
 |------------|------------------|------|
 | muslimset-murotal-1 | https://nidzammusthafa.github.io/muslimset-murotal-1/ | Ahmed Ajamy, Mishary Alafasy |
-| muslimset-murotal-2 | https://nidzammusthafa.github.io/muslimset-murotal-2/ | Husary Mujawwad, Minshawi |
-| muslimset-murotal-3 | https://nidzammusthafa.github.io/muslimset-murotal-3/ | Muhammad Ayyoub, Muhammad Jibreel |
+| muslimset-murotal-2 | https://nidzammusthafa.github.io/muslimset-murotal-2/ | Muhammad Ayyoub, Muhammad Jibreel |
+| muslimset-murotal-3 | https://nidzammusthafa.github.io/muslimset-murotal-3/ | Husary Mujawwad, Minshawi |
 
 ## Akses Audio via API
 
@@ -35,14 +35,14 @@ https://nidzammusthafa.github.io/{repo}/{qari}/{ayat}.mp3
 #### Repository 2 (muslimset-murotal-2)
 | ID Qari | Nama Qari | Contoh URL |
 |---------|-----------|------------|
-| `husarymujawwad` | Husary Mujawwad | https://nidzammusthafa.github.io/muslimset-murotal-2/husarymujawwad/1.mp3 |
-| `minshawi` | Minshawi | https://nidzammusthafa.github.io/muslimset-murotal-2/minshawi/1.mp3 |
+| `muhammadayyoub` | Muhammad Ayyoub | https://nidzammusthafa.github.io/muslimset-murotal-2/muhammadayyoub/1.mp3 |
+| `muhammadjibreel` | Muhammad Jibreel | https://nidzammusthafa.github.io/muslimset-murotal-2/muhammadjibreel/1.mp3 |
 
 #### Repository 3 (muslimset-murotal-3)
 | ID Qari | Nama Qari | Contoh URL |
 |---------|-----------|------------|
-| `muhammadayyoub` | Muhammad Ayyoub | https://nidzammusthafa.github.io/muslimset-murotal-3/muhammadayyoub/1.mp3 |
-| `muhammadjibreel` | Muhammad Jibreel | https://nidzammusthafa.github.io/muslimset-murotal-3/muhammadjibreel/1.mp3 |
+| `husarymujawwad` | Husary Mujawwad | https://nidzammusthafa.github.io/muslimset-murotal-3/husarymujawwad/1.mp3 |
+| `minshawi` | Minshawi | https://nidzammusthafa.github.io/muslimset-murotal-3/minshawi/1.mp3 |
 
 ## Link Player
 
@@ -82,17 +82,17 @@ muslimset-murotal-1/
 muslimset-murotal-2/
 ├── index.html
 ├── README.md
-├── husarymujawwad/
+├── muhammadayyoub/
 │   └── ...
-└── minshawi/
+└── muhammadjibreel/
     └── ...
 
 muslimset-murotal-3/
 ├── index.html
 ├── README.md
-├── muhammadayyoub/
+├── husarymujawwad/
 │   └── ...
-└── muhammadjibreel/
+└── minshawi/
     └── ...
 ```
 
